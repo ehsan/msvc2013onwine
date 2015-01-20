@@ -344,7 +344,7 @@ def CopyToFinalLocation(extracted_dirs, target_dir):
       'Program Files\\Microsoft Visual Studio 12.0\\DIA SDK\\': 'DIA SDK\\',
       'System64\\': 'sys64\\',
       'System\\': 'sys32\\',
-      'Windows Kits\\8.1\\': 'win8sdk\\',
+      'Windows Kits\\8.0\\': 'win8sdk\\',
       'WinDDK\\7600.16385.win7_wdk.100208-1538\\': 'wdk\\',
   }
   matches = []
