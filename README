@@ -1,0 +1,34 @@
+This script helps you set up an MSVC 2013 Update 4 installation on Linux to run under wine.
+
+Instructions
+============
+
+Before you start, make sure you have a Windows machine with a working Python environment (I have used the Python that comes with MozillaBuild) with lots of free disk space.  The installation script downloads and extracts a 6.5GB image, among other things.
+
+On the Windows machine, run ./toolchain2013.py.  It will take a while, and once it finishes successfully, there should be a win_toolchain_2013 directory in the current working directory.  That is your Visual C++ installation.
+
+Now, you need to copy the files to your Linux machine.
+
+On the Linux machine, you can run MSVC like this:
+
+$ cd /path/to/win_toolchain_2013
+$ export INCLUDE="$PWD/VC/include;$PWD/win8sdk/Include/shared/;$PWD/win8sdk/Include/um/;$PWD/win8sdk/Include/winrt/"
+$ export LIB="$PWD/VC/lib;$PWD/win8sdk/Lib/win8/um/x86"
+$ echo "#include <iostream>" > test.cpp
+$ echo "int main() { std::cout << \"Hello from MSVC\\n\"; }" >> test.cpp
+$ export WINEDEBUG=-all # to turn off wine's warnings about unimplemented stuff
+$ cp sys32/msvcr120.dll VC/bin # need the native version of this DLL
+$ export export WINEDLLOVERRIDES="*msvcr120=n" # tell wine to use the native DLL
+$ wine VC/bin/cl.exe test.cpp
+Microsoft (R) C/C++ Optimizing Compiler Version 18.00.21005.1 for x86
+Copyright (C) Microsoft Corporation.  All rights reserved.
+
+test.cpp
+/media/ehsan/KINGSTON/win_toolchain_2013/VC/include\xlocale(337) : warning C4530: C++ exception handler used, but unwind semantics are not enabled. Specify /EHsc
+Microsoft (R) Incremental Linker Version 12.00.21005.1
+Copyright (C) Microsoft Corporation.  All rights reserved.
+
+/out:test.exe
+test.obj
+$ wine ./test.exe
+Hello from MSVC
