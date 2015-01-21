@@ -25,7 +25,6 @@ g_temp_dirs = []
 
 
 sys.path.append(os.path.join(BASEDIR, '..'))
-import download_from_google_storage
 
 
 def GetLongPathName(path):
@@ -211,31 +210,6 @@ def DownloadWDKIso():
   target_path = os.path.join(wdk_temp_dir, 'GRMWDK_EN_7600_1.ISO')
   Download(WDK_ISO_URL, target_path)
   return target_path
-
-
-def DownloadUsingGsutil(filename):
-  """Downloads the given file from Google Storage chrome-wintoolchain bucket."""
-  temp_dir = TempDir()
-  assert os.path.basename(filename) == filename
-  target_path = os.path.join(temp_dir, filename)
-  gsutil = download_from_google_storage.Gsutil(
-      download_from_google_storage.GSUTIL_DEFAULT_PATH, boto_path=None)
-  code = gsutil.call('cp', 'gs://chrome-wintoolchain/' + filename, target_path)
-  if code != 0:
-    sys.exit('gsutil failed')
-  return target_path
-
-
-def GetVSInternal():
-  """Uses gsutil to pull the toolchain from internal Google Storage bucket."""
-  return DownloadUsingGsutil('VS2013_RTM_PRO_ENU.iso')
-
-
-def GetSDKInternal():
-  """Downloads a zipped copy of the SDK from internal Google Storage bucket,
-  and extracts it."""
-  zip_file = DownloadUsingGsutil('Standalone.zip')
-  return ExtractIso(zip_file)
 
 
 class SourceImages(object):
@@ -424,16 +398,6 @@ def GenerateSetEnvCmd(target_dir, pro):
                '%~dp0..\\..\\VC\\atlmfc\\lib\\amd64\n')
 
 
-def DoTreeMirror(target_dir, tree_sha1):
-  """In order to save temporary space on bots that do not have enough space to
-  download ISOs, unpack them, and copy to the target location, the whole tree
-  is uploaded as a zip to internal storage, and then mirrored here."""
-  local_zip = DownloadUsingGsutil(tree_sha1 + '.zip')
-  sys.stdout.write('Extracting %s...\n' % local_zip)
-  sys.stdout.flush()
-  RunOrDie('7z x "%s" -y "-o%s"' % (local_zip, target_dir))
-
-
 def main():
   parser = optparse.OptionParser(description=sys.modules[__name__].__doc__)
   parser.add_option('--targetdir', metavar='DIR',
@@ -449,10 +413,6 @@ def main():
   parser.add_option('--sha1',
                     help='tree sha1 that can be used to mirror an internal '
                          'copy (used if --use-gs)')
-  parser.add_option('--use-gs',
-                    help='Use internal servers to pull isos',
-                    default=bool(int(os.environ.get('CHROME_HEADLESS', 0))),
-                    action='store_true')
   options, _ = parser.parse_args()
   try:
     target_dir = os.path.abspath(options.targetdir)
@@ -464,14 +424,10 @@ def main():
     # codec dll very well, so this is the simplest way to make sure it runs
     # correctly, as we don't otherwise care about working directory.
     os.chdir(os.path.join(BASEDIR, '7z'))
-    if options.use_gs and options.sha1:
-      options.express = False
-      DoTreeMirror(target_dir, options.sha1)
-    else:
-      images = GetSourceImages(options.local, not options.express)
-      extracted = ExtractComponents(images)
-      CopyToFinalLocation(extracted, target_dir)
-      GenerateSetEnvCmd(target_dir, not options.express)
+    images = GetSourceImages(options.local, not options.express)
+    extracted = ExtractComponents(images)
+    CopyToFinalLocation(extracted, target_dir)
+    GenerateSetEnvCmd(target_dir, not options.express)
 
     data = {
         'path': target_dir,
