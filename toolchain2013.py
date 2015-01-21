@@ -113,7 +113,7 @@ def GetMainIsoUrl(pro):
         'A/F/1/AF128362-A6A8-4DB3-A39A-C348086472CC/VS2013_RTM_PRO_ENU.iso')
   else:
     return (prefix +
-        '7/2/E/72E0F986-D247-4289-B9DC-C4FB07374894/VS2013_RTM_DskExp_ENU.iso')
+        '9/6/4/96442E58-C65C-4122-A956-CCA83EECCD03/vs2013.4_dskexp_ENU.iso')
 
 
 def Download(url, local_path):
