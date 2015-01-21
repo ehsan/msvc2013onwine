@@ -409,7 +409,8 @@ def main():
   parser.add_option('--local', metavar='DIR',
                     help='use downloaded files from DIR')
   parser.add_option('--express',
-                    help='use VS Express instead of Pro', action='store_true')
+                    help='use VS Express instead of Pro', action='store_true',
+                    default=True)
   parser.add_option('--sha1',
                     help='tree sha1 that can be used to mirror an internal '
                          'copy (used if --use-gs)')
