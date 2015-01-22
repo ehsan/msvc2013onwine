@@ -37,10 +37,6 @@ def BuildFileList():
   # Subset of VS corresponding roughly to VC.
   vs_path = r'C:\Program Files (x86)\Microsoft Visual Studio 12.0'
   for path in [
-      'DIA SDK/bin',
-      'DIA SDK/idl',
-      'DIA SDK/include',
-      'DIA SDK/lib',
       'VC/atlmfc',
       'VC/bin',
       'VC/crt',
