@@ -3,13 +3,11 @@ This script helps you set up an MSVC 2013 Update 4 installation on Linux to run 
 Instructions
 ============
 
-Before you start, make sure you have a Windows machine with a working Python environment (I have used the Python that comes with MozillaBuild) with lots of free disk space.  The installation script downloads and extracts a 6.5GB image, among other things.
+Before you start, make sure you have a Windows machine with a working Python environment (I have used the Python that comes with MozillaBuild) with lots of free disk space.
 
-On the Windows machine, run ./toolchain2013.py.  It will take a while, and once it finishes successfully, there should be a win_toolchain_2013 directory in the current working directory.  That is your Visual C++ installation.
+On the Windows machine, first download and install Visual C++ 2013 Community Edition from http://www.visualstudio.com/en-us/news/vs2013-community-vs.aspx. Then, run `python package_from_installed.py`.  It will take a while, and once it finishes successfully, there should be a <sha1>.zip file in the current working directory.  That is your Visual C++ installation, packaged and ready to be transfered into a Linux machine.
 
-Now, you need to copy the files to your Linux machine.
-
-On the Linux machine, you can run MSVC like this:
+On the Linux machine, extract the ZIP package somewhere.  Then, you can run MSVC like this:
 
 $ cd /path/to/win_toolchain_2013
 $ export INCLUDE="$PWD/VC/include;$PWD/win8sdk/Include/shared/;$PWD/win8sdk/Include/um/;$PWD/win8sdk/Include/winrt/"
