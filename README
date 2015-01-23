@@ -30,3 +30,8 @@ Copyright (C) Microsoft Corporation.  All rights reserved.
 test.obj
 $ wine ./test.exe
 Hello from MSVC
+
+Acknowledgements
+================
+
+Thanks to the Chromium project's depot_tools.  The package_from_installed.py script originally comes from commit 797060631a486e61dec3bab8b30f35765328660f of that project.
