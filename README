@@ -20,12 +20,12 @@ $ export WINEDEBUG=-all # to turn off wine's warnings about unimplemented stuff
 $ cp sys32/msvcr120.dll VC/bin # need the native version of this DLL
 $ export export WINEDLLOVERRIDES="*msvcr120=n" # tell wine to use the native DLL
 $ wine VC/bin/cl.exe test.cpp
-Microsoft (R) C/C++ Optimizing Compiler Version 18.00.21005.1 for x86
+Microsoft (R) C/C++ Optimizing Compiler Version 18.00.31101.1 for x86
 Copyright (C) Microsoft Corporation.  All rights reserved.
 
 test.cpp
 /media/ehsan/KINGSTON/win_toolchain_2013/VC/include\xlocale(337) : warning C4530: C++ exception handler used, but unwind semantics are not enabled. Specify /EHsc
-Microsoft (R) Incremental Linker Version 12.00.21005.1
+Microsoft (R) Incremental Linker Version 12.00.31101.1
 Copyright (C) Microsoft Corporation.  All rights reserved.
 
 /out:test.exe
