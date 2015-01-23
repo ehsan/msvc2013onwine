@@ -21,13 +21,13 @@ useful as the resulting zip can't be redistributed, and most will presumably
 have a Pro license anyway).
 """
 
+import hashlib
 import os
 import shutil
 import sys
 import tempfile
 import zipfile
 
-import get_toolchain_if_necessary
 import toolchain2013  # pylint: disable=F0401
 
 
@@ -97,6 +97,68 @@ def AddEnvSetup(files):
   files.append((os.path.join(tempdir, 'win8sdk', 'bin', 'SetEnv.cmd'),
                 'win8sdk\\bin\\SetEnv.cmd'))
 
+if sys.platform != 'cygwin':
+  import ctypes.wintypes
+  GetFileAttributes = ctypes.windll.kernel32.GetFileAttributesW
+  GetFileAttributes.argtypes = (ctypes.wintypes.LPWSTR,)
+  GetFileAttributes.restype = ctypes.wintypes.DWORD
+  FILE_ATTRIBUTE_HIDDEN = 0x2
+  FILE_ATTRIBUTE_SYSTEM = 0x4
+
+
+def IsHidden(file_path):
+  """Returns whether the given |file_path| has the 'system' or 'hidden'
+  attribute set."""
+  p = GetFileAttributes(file_path)
+  assert p != 0xffffffff
+  return bool(p & (FILE_ATTRIBUTE_HIDDEN | FILE_ATTRIBUTE_SYSTEM))
+
+def GetFileList(root):
+  """Gets a normalized list of files under |root|."""
+  assert not os.path.isabs(root)
+  assert os.path.normpath(root) == root
+  file_list = []
+  for base, _, files in os.walk(root):
+    paths = [os.path.join(base, f) for f in files]
+    file_list.extend(x.lower() for x in paths if not IsHidden(x))
+  return sorted(file_list)
+
+def MakeTimestampsFileName(root):
+  return os.path.join(root, '..', '.timestamps')
+
+def CalculateHash(root):
+  """Calculates the sha1 of the paths to all files in the given |root| and the
+  contents of those files, and returns as a hex string."""
+  file_list = GetFileList(root)
+
+  # Check whether we previously saved timestamps in $root/../.timestamps. If
+  # we didn't, or they don't match, then do the full calculation, otherwise
+  # return the saved value.
+  timestamps_file = MakeTimestampsFileName(root)
+  timestamps_data = {'files': [], 'sha1': ''}
+  if os.path.exists(timestamps_file):
+    with open(timestamps_file, 'rb') as f:
+      try:
+        timestamps_data = json.load(f)
+      except ValueError:
+        # json couldn't be loaded, empty data will force a re-hash.
+        pass
+
+  matches = len(file_list) == len(timestamps_data['files'])
+  if matches:
+    for disk, cached in zip(file_list, timestamps_data['files']):
+      if disk != cached[0] or os.stat(disk).st_mtime != cached[1]:
+        matches = False
+        break
+  if matches:
+    return timestamps_data['sha1']
+
+  digest = hashlib.sha1()
+  for path in file_list:
+    digest.update(path)
+    with open(path, 'rb') as f:
+      digest.update(f.read())
+  return digest.hexdigest()
 
 def RenameToSha1(output):
   """Determine the hash in the same way that the unzipper does to rename the
@@ -110,7 +172,7 @@ def RenameToSha1(output):
       os.path.join(old_dir, output), 'r', zipfile.ZIP_DEFLATED, True) as zf:
     zf.extractall(rel_dir)
   print 'Hashing...'
-  sha1 = get_toolchain_if_necessary.CalculateHash(rel_dir)
+  sha1 = CalculateHash(rel_dir)
   os.chdir(old_dir)
   shutil.rmtree(tempdir)
   final_name = sha1 + '.zip'
