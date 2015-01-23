@@ -13,7 +13,7 @@ On the Linux machine, you can run MSVC like this:
 
 $ cd /path/to/win_toolchain_2013
 $ export INCLUDE="$PWD/VC/include;$PWD/win8sdk/Include/shared/;$PWD/win8sdk/Include/um/;$PWD/win8sdk/Include/winrt/"
-$ export LIB="$PWD/VC/lib;$PWD/win8sdk/Lib/win8/um/x86"
+$ export LIB="$PWD/VC/lib;$PWD/win8sdk/Lib/winv6.3/um/x86"
 $ echo "#include <iostream>" > test.cpp
 $ echo "int main() { std::cout << \"Hello from MSVC\\n\"; }" >> test.cpp
 $ export WINEDEBUG=-all # to turn off wine's warnings about unimplemented stuff
