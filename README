@@ -13,10 +13,10 @@ $ cd /path/to/win_toolchain_2013
 $ export INCLUDE="$PWD/VC/include;$PWD/win8sdk/Include/shared/;$PWD/win8sdk/Include/um/;$PWD/win8sdk/Include/winrt/"
 $ export LIB="$PWD/VC/lib;$PWD/win8sdk/Lib/winv6.3/um/x86"
 $ echo "#include <iostream>" > test.cpp
-$ echo "int main() { std::cout << \"Hello from MSVC\\n\"; }" >> test.cpp
+$ echo "int main() { std::cout << \"Hello from MSVC\"; }" >> test.cpp
 $ export WINEDEBUG=-all # to turn off wine's warnings about unimplemented stuff
 $ cp sys32/msvcr120.dll VC/bin # need the native version of this DLL
-$ export export WINEDLLOVERRIDES="*msvcr120=n" # tell wine to use the native DLL
+$ export WINEDLLOVERRIDES="*msvcr120=n" # tell wine to use the native DLL
 $ wine VC/bin/cl.exe test.cpp
 Microsoft (R) C/C++ Optimizing Compiler Version 18.00.31101.1 for x86
 Copyright (C) Microsoft Corporation.  All rights reserved.
